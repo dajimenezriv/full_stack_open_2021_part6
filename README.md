@@ -20,12 +20,25 @@ npm install @reduxjs/toolkit react-redux
 npm install --save-dev deep-freeze
 ```
 
-We learn how to create a reducer and to export its actions.
+We learn how to create a reducer and to export its actions with createSlice.
 ```javascript
-const reducer = (state = initialState, { type, data } = {}) => {
-  switch (type) {
-    case 'VOTE': {
-      const { id } = data;
+const slice = createSlice({
+  name: 'anecdotes',
+  initialState,
+  reducers: {
+    // the default type is 'anecdotes/newAnecdote'
+    newAnecdote(state, { payload }) {
+      const content = payload;
+      // the Immer library allow us to mutate the state inside the reducer
+      state.push({
+        content,
+        id: getId(),
+        votes: 0,
+      });
+    },
+    // the default type is 'anecdotes/vote'
+    vote(state, { payload }) {
+      const id = payload;
       const prevAnecdote = state.find((anecdote) => anecdote.id === id);
       return state.map((anecdote) => (
         anecdote.id !== id
@@ -34,28 +47,10 @@ const reducer = (state = initialState, { type, data } = {}) => {
             ...prevAnecdote,
             votes: prevAnecdote.votes + 1,
           }));
-    }
-
-    case 'NEW_ANECDOTE': {
-      return [...state, data];
-    }
-
-    default:
-      return state;
-  }
-};
-
-export const vote = (id) => ({
-  type: 'VOTE',
-  data: { id },
-});
-
-export const createAnecdote = (content) => ({
-  type: 'NEW_ANECDOTE',
-  data: {
-    content,
-    id: getId(),
-    votes: 0,
+    },
   },
 });
+
+export const { newAnecdote, vote } = slice.actions;
+export default slice.reducer;
 ```
