@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { vote } from 'reducers/anecdoteReducer';
-import { removeNotification, setNotification } from 'reducers/notificationReducer';
+import { setNotification } from 'reducers/notificationReducer';
 
 function AnecdoteList() {
   // we want the whole state
@@ -28,9 +28,8 @@ function AnecdoteList() {
                 <button
                   type="button"
                   onClick={() => {
-                    dispatch(vote(anecdote.id));
-                    dispatch(setNotification(anecdote.content));
-                    setTimeout(() => dispatch(removeNotification()), 5000);
+                    dispatch(vote(anecdote));
+                    dispatch(setNotification(`you voted '${anecdote.content}'`, 5));
                   }}
                 >
                   vote

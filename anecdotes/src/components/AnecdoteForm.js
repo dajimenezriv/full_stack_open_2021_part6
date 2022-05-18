@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { newAnecdote } from 'reducers/anecdoteReducer';
+import { createAnecdote } from 'reducers/anecdoteReducer';
 
 function AnecdoteForm() {
   const [content, setContent] = useState('');
@@ -11,7 +11,7 @@ function AnecdoteForm() {
       <h2>create new</h2>
       <form>
         <div><input value={content} onChange={(e) => setContent(e.target.value)} /></div>
-        <button type="button" onClick={() => dispatch(newAnecdote(content))}>create</button>
+        <button type="button" onClick={() => dispatch(createAnecdote(content))}>create</button>
       </form>
     </div>
   );

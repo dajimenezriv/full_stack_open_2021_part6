@@ -10,7 +10,7 @@ npm init @eslint/config
 
 Add jsconfig to import everything from src.
  
-## Part a) Flux-architecture and Redux
+## Part a) Flux-architecture and Redux || Part b) Many reducers
 
 It shows how to use reducers from Redux Toolkit.<br>
 Reducers must be [pure functions](https://en.wikipedia.org/wiki/Pure_function).
@@ -52,5 +52,62 @@ const slice = createSlice({
 });
 
 export const { newAnecdote, vote } = slice.actions;
+export default slice.reducer;
+```
+
+## Part c) Communication with server in a redux application
+
+We want to abstract all the connection with the server from the components.<br>
+```
+npm install redux-thunk
+```
+With Redux Thunk it is possible to implement action creators which return a function instead of an object.<br>
+```javascript
+import { createSlice } from '@reduxjs/toolkit';
+import anecdoteService from 'services/anecdote';
+
+const slice = createSlice({
+  name: 'anecdotes',
+  initialState: [],
+  reducers: {
+    appendAnecdote(state, { payload }) {
+      // the Immer library allow us to mutate the state inside the reducer
+      state.push(payload);
+    },
+    setAnecdotes(state, { payload }) {
+      return payload;
+    },
+    updateAnecdote(state, { payload }) {
+      const anecdote = payload;
+      return state.map((a) => (
+        anecdote.id !== a.id
+          ? a
+          : anecdote
+      ));
+    },
+  },
+});
+
+export const initializeAnecdotes = () => async (dispatch) => {
+  const anecdotes = await anecdoteService.getAll();
+  dispatch(setAnecdotes(anecdotes));
+};
+
+export const createAnecdote = (content) => async (dispatch) => {
+  const newAnecdote = await anecdoteService.createNew(content);
+  dispatch(appendAnecdote(newAnecdote));
+};
+
+export const vote = (anecdote) => async (dispatch) => {
+  let updatedAnecdote = { ...anecdote, votes: anecdote.votes + 1 };
+  updatedAnecdote = await anecdoteService.vote(updatedAnecdote);
+  dispatch(updateAnecdote(updatedAnecdote));
+};
+
+export const {
+  appendAnecdote,
+  setAnecdotes,
+  updateAnecdote,
+} = slice.actions;
 export default slice.reducer;
 ```
