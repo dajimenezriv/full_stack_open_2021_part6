@@ -1,5 +1,7 @@
 # full_stack_open_2021_part6
 
+[Course](https://fullstackopen.com/en/part6)
+
 ## Configuration
 
 Configure eslint.
@@ -53,6 +55,13 @@ const slice = createSlice({
 
 export const { newAnecdote, vote } = slice.actions;
 export default slice.reducer;
+```
+
+### How to run?
+
+```bash
+npm start
+npm test
 ```
 
 ## Part c) Communication with server in a redux application
@@ -110,4 +119,35 @@ export const {
   updateAnecdote,
 } = slice.actions;
 export default slice.reducer;
+```
+
+### How to run?
+
+```bash
+npm start
+npm run server # serves the db.json
+```
+
+## Part d) connect
+
+We are going to use the connect-function from react-redux.<br>
+It is not use anymore, but maybe it's still used in old projects.<br>
+
+```javascript
+const mapStateToProps = (state) => {
+  if (state.filter === '') return { anecdotes: state.anecdotes };
+  return { anecdotes: state.anecdotes.filter((a) => a.content.includes(state.filter)) };
+};
+
+const mapDispatchToProps = {
+  vote,
+  setNotification,
+};
+
+function AnecdoteList(props) {
+  ...
+}
+
+const ConnectedAnecdotes = connect(mapStateToProps, mapDispatchToProps)(AnecdoteList);
+export default ConnectedAnecdotes;
 ```
